@@ -2,9 +2,11 @@
 
 import React, { useState } from "react";
 
-const FormLogin: React.FC = () => {
+const FormRegister: React.FC = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -13,6 +15,10 @@ const FormLogin: React.FC = () => {
     e.preventDefault();
     setError(null);
 
+    if (!name.trim()) {
+      setError("Please enter your full name.");
+      return;
+    }
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setError("Please enter a valid email address.");
       return;
@@ -21,11 +27,15 @@ const FormLogin: React.FC = () => {
       setError("Password must be at least 6 characters.");
       return;
     }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
 
     try {
       setIsLoading(true);
-      // TODO: ganti dengan call ke API login kamu
-      await new Promise((r) => setTimeout(r, 600));
+      // TODO: ganti dengan call ke API register kamu
+      await new Promise((r) => setTimeout(r, 800));
     } catch (err: any) {
       setError(err?.message || "Something went wrong.");
     } finally {
@@ -42,10 +52,10 @@ const FormLogin: React.FC = () => {
               PR
             </div>
             <h1 className="mt-3 text-2xl font-semibold tracking-tight">
-              Welcome back
+              Create your account
             </h1>
             <p className="mt-1 text-sm text-neutral-500">
-              Sign in to continue to Property Renting
+              Register to continue to Property Renting
             </p>
           </div>
 
@@ -56,6 +66,21 @@ const FormLogin: React.FC = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium mb-1">
+                Full Name
+              </label>
+              <input
+                id="name"
+                type="text"
+                placeholder="John Doe"
+                className="w-full rounded-xl border border-neutral-300/80 dark:border-neutral-700 bg-white/80 dark:bg-neutral-900 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500/70 focus:border-rose-500 transition"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+
             <div>
               <label htmlFor="email" className="block text-sm font-medium mb-1">
                 Email
@@ -74,26 +99,16 @@ const FormLogin: React.FC = () => {
             </div>
 
             <div>
-              <div className="flex items-center justify-between">
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium mb-1"
-                >
-                  Password
-                </label>
-                <a
-                  href="/forgot-password"
-                  className="text-xs text-rose-600 hover:underline"
-                >
-                  Forgot password?
-                </a>
-              </div>
-
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium mb-1"
+              >
+                Password
+              </label>
               <div className="relative">
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
                   placeholder="••••••••"
                   className="w-full rounded-xl border border-neutral-300/80 dark:border-neutral-700 bg-white/80 dark:bg-neutral-900 px-3 py-2.5 pr-10 text-sm outline-none focus:ring-2 focus:ring-rose-500/70 focus:border-rose-500 transition"
                   value={password}
@@ -108,7 +123,6 @@ const FormLogin: React.FC = () => {
                   className="absolute inset-y-0 right-0 flex items-center pr-3 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
                 >
                   {showPassword ? (
-                    // eye-off
                     <svg
                       viewBox="0 0 24 24"
                       className="w-5 h-5"
@@ -121,7 +135,6 @@ const FormLogin: React.FC = () => {
                       <path d="M9.88 4.24A9.77 9.77 0 0121 12c-.5.86-1.16 1.69-1.96 2.45M6.53 6.53A9.77 9.77 0 003 12c.5.86 1.16 1.69 1.96 2.45" />
                     </svg>
                   ) : (
-                    // eye
                     <svg
                       viewBox="0 0 24 24"
                       className="w-5 h-5"
@@ -137,20 +150,23 @@ const FormLogin: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <label className="inline-flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  className="size-4 rounded border-neutral-300 text-rose-600 focus:ring-rose-500"
-                />
-                Remember me
-              </label>
-              <a
-                href="/register"
-                className="text-xs text-neutral-500 hover:underline"
+            <div>
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium mb-1"
               >
-                Create account
-              </a>
+                Confirm Password
+              </label>
+              <input
+                id="confirmPassword"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                className="w-full rounded-xl border border-neutral-300/80 dark:border-neutral-700 bg-white/80 dark:bg-neutral-900 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-rose-500/70 focus:border-rose-500 transition"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                minLength={6}
+              />
             </div>
 
             <button
@@ -158,7 +174,7 @@ const FormLogin: React.FC = () => {
               disabled={isLoading}
               className="w-full rounded-xl bg-rose-600 text-white text-sm font-medium py-2.5 hover:bg-rose-700 active:bg-rose-800 disabled:opacity-60 disabled:cursor-not-allowed transition"
             >
-              {isLoading ? "Signing in…" : "Sign in"}
+              {isLoading ? "Creating account…" : "Sign up"}
             </button>
           </form>
 
@@ -187,19 +203,14 @@ const FormLogin: React.FC = () => {
         </div>
 
         <p className="mt-4 text-center text-xs text-neutral-500">
-          By signing in, you agree to our{" "}
-          <a className="underline hover:no-underline" href="/terms">
-            Terms
-          </a>{" "}
-          &{" "}
-          <a className="underline hover:no-underline" href="/privacy">
-            Privacy
+          Already have an account?{" "}
+          <a className="underline hover:no-underline" href="/login">
+            Sign in
           </a>
-          .
         </p>
       </div>
     </div>
   );
 };
 
-export default FormLogin;
+export default FormRegister;
