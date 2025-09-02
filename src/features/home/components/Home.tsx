@@ -1,6 +1,11 @@
 "use client";
 import React from "react";
 import Link from "next/link";
+import useGetRooms from "../api/useGetRooms";
+import { Room } from "@/types/room";
+
+const FALLBACK_IMG =
+  "https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=1600&auto=format&fit=crop";
 
 // ---- Mock Data ----
 const bandungHomes = [
@@ -243,27 +248,33 @@ const SectionRow: React.FC<{ title: string; items: typeof bandungHomes }> = ({
 
 // ---- Page ----
 export default function HomePage() {
+  const { data: rows = [], isLoading, isError } = useGetRooms(); // tanpa filter dulu
+
+  const liveItems = rows.map((r) => ({
+    id: String(r.id),
+    title: r.name,
+    price: r.price,
+    nights: 2,
+    rating: 4.9,
+    badge: r.property?.title ?? "Live",
+    image: r.roomImages?.[0]?.url ?? FALLBACK_IMG,
+  }));
+
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
-      {/* Top bar */}
+    <main className="mx-auto max-w-6xl w-full px-4 pb-20">
+      <div className="text-xs text-neutral-500 my-2">
+        API items: {rows.length} | loading: {String(isLoading)} | error:{" "}
+        {String(isError)}
+      </div>
 
-      {/* Hero */}
-      <section className="relative">
-        <div className="bg-[radial-gradient(ellipse_at_bottom_left,rgba(244,63,94,0.25),transparent_50%),radial-gradient(ellipse_at_top_right,rgba(59,130,246,0.25),transparent_50%)]">
-          <div className="mx-auto max-w-6xl w-full px-4 py-6 md:py-8">
-            <SearchBar />
-          </div>
-        </div>
-      </section>
+      {/* Paksa tampil dulu biar kelihatan */}
+      <SectionRow title="New this week" items={liveItems} />
 
-      {/* Sections */}
-      <main className="mx-auto max-w-6xl w-full px-4 pb-20">
-        <SectionRow title="Popular homes in Bandung" items={bandungHomes} />
-        <SectionRow
-          title="Available in Kabupaten Tangerang this weekend"
-          items={tangerangHomes}
-        />
-      </main>
-    </div>
+      <SectionRow title="Popular homes in Bandung" items={bandungHomes} />
+      <SectionRow
+        title="Available in Kabupaten Tangerang this weekend"
+        items={tangerangHomes}
+      />
+    </main>
   );
 }
